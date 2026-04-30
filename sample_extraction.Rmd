@@ -9,22 +9,75 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Load in data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+nc_y_nihtb <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_nihtb.tsv") |>
+  dplyr::rename(
+    subjectkey = participant_id,
+    eventname  = session_id
+  )
+library(abcdutils)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+## **(H.1) Create function to extract NIH toolbox measures**
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r function_extract_nih}
+
+get_nihtbx <- function(nc_y_nihtb, subjects = NULL, t = NULL) {
+  # --- NIH Toolbox summary scores ---
+  nihtbx <- nc_y_nihtb |>
+    filter_timepoint(t = t) |>
+    filter_subjects(subjects = subjects) |>
+    dplyr::select(
+      subjectkey,                     # was subjectkey
+      eventname,                         # was eventname
+      nc_y_nihtb__flnkr__agecor_score     # was nihtbx_flanker_agecorrected
+    ) |>
+    dplyr::mutate(
+      eventname = unique(na.omit(eventname)) |> as.character()
+    )
+  return(nihtbx)
+}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## 1. Extract (for each t of interest) 2. Merge (all t together) 3. Convert to wide 4. Save to HPC
+
+```{r}
+# extract subjects 
+subjects_ela <- unique(nc_y_nihtb$subjectkey)
+
+# ==== (1) Extract columns of interest from baseline nih ====
+  nihtbx_1yfu <- get_nihtbx(nc_y_nihtb, subjects_ela, t=2)# n = 247
+      
+  
+
+# ==== (2) Extract columns of interest from 2yfu nih ====
+  nihtbx_mtbi_0to2_2yfu <- get_nihtbx(nc_y_nihtb, mtbiSubj_noSibs_0to2, t=2) # n = 247
+
+      # =============== #
+    colSums(is.na(nihtbx_mtbi_0to2_2yfu))
+  
+# ==== (3) Merge nih bl and 2yfu ====
+  ## ---- (i) Merge long ----
+    mtbi_nihtbx_0to2_long <- bind_rows(nihtbx_mtbi_0to2_BL, nihtbx_mtbi_0to2_2yfu) 
+  ## ---- (ii) Convert from long to wide ---- 
+    mtbi_nihtbx_0to2_wide <- mtbi_nihtbx_0to2_long %>% 
+    mutate(eventname = case_when(
+      eventname == "baseline_year_1_arm_1" ~ "BL",
+      eventname == "2_year_follow_up_y_arm_1" ~ "2yfu"
+    )) %>%
+    pivot_wider(
+      names_from = eventname,
+      values_from = c(nihtbx_flanker_agecorrected:nihtbx_pattern_agecorrected))
+
+    # =============== #
+      # Write
+        write_csv(nihtbx_1yfu, file.path("Z:/Users/shaar/sample-extract/nihtbx_1yfu.csv"))
+      # Read
+        nihtbx_1yfu <- read_csv(file.path("Z:/Users/shaar/sample-extract/nihtbx_1yfu.csv"))
+      # =============== #
+
+```
+    
