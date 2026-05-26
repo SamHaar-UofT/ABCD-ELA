@@ -1,0 +1,689 @@
+---
+title: "abcd-extract"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+## Function to extract ABCD data
+```{r}
+extract_abcd <- function(path, vars) {
+  readr::read_tsv(path) |>
+    dplyr::select(
+      participant_id,
+      session_id,
+      dplyr::all_of(vars)
+    )
+}
+```
+
+## Function to save and reload data
+```{r}
+save_and_reload <- function(data, name) {
+  path <- file.path("Z:/Users/shaar/abcd-extract", paste0(name, ".tsv"))
+  write_tsv(data, path)
+  read_tsv(path)
+}
+```
+
+## Material Deprivation:
+```{r}
+## Read in table
+ab_p_demo <- readr::read_tsv("Z:/external/abcd/6.1/core/abcd-general/ab_p_demo.tsv")
+
+## Define variables of interest
+demo_vars <- c(
+  "ab_p_demo__exp__fam_001",
+  "ab_p_demo__exp__fam_002",
+  "ab_p_demo__exp__fam_003",
+  "ab_p_demo__exp__fam_004",
+  "ab_p_demo__exp__fam_005",
+  "ab_p_demo__exp__fam_006",
+  "ab_p_demo__exp__fam_007"
+)
+
+## Extract data
+demo_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/abcd-general/ab_p_demo.tsv",
+  vars = demo_vars
+)
+
+## Put into wide format
+demo_wide <- demo_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(demo_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+demo_wide  <- save_and_reload(demo_wide, "demo_wide")
+```
+
+## Perceived Parental Inattentiveness:
+```{r}
+## Read in table
+fc_y_pm <- readr::read_tsv("Z:/external/abcd/6.1/core/friends-family-community/fc_y_pm.tsv")
+
+## Define variables of interest
+pm_vars <- c(
+  "fc_y_pm_mean"
+)
+
+## Extract data
+pm_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/friends-family-community/fc_y_pm.tsv",
+  vars = pm_vars
+)
+
+## Put into wide format
+pm_wide <- pm_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(pm_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+pm_wide  <- save_and_reload(pm_wide, "pm_wide")
+```
+
+## Family conflict:
+```{r}
+## Read in table
+fc_p_fes <- readr::read_tsv("Z:/external/abcd/6.1/core/friends-family-community/fc_p_fes.tsv")
+
+## Define variables of interest
+fes_vars <- c(
+  "fc_p_fes__confl_mean"
+)
+
+## Extract data
+fes_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/friends-family-community/fc_p_fes.tsv",
+  vars = fes_vars
+)
+
+## Put into wide format
+fes_wide <- fes_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(fes_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+fes_wide  <- save_and_reload(fes_wide, "fes_wide")
+```
+
+## Perceived neighbourhood crime and safety:
+```{r}
+## Read in table
+fc_p_nsc <- readr::read_tsv("Z:/external/abcd/6.1/core/friends-family-community/fc_p_nsc.tsv")
+
+## Define variables of interest
+nsc_vars <- c(
+  "fc_p_nsc__ns_001",
+  "fc_p_nsc__ns_002",
+  "fc_p_nsc__ns_003"
+)
+
+## Extract data
+nsc_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/friends-family-community/fc_p_nsc.tsv",
+  vars = nsc_vars
+)
+
+## Put into wide format
+nsc_wide <- nsc_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(nsc_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+nsc_wide  <- save_and_reload(nsc_wide, "nsc_wide")
+```
+
+## Behavioral Indicator of Resiliency to Distress Task (Bird):
+```{r}
+## Read in table
+nc_y_bird <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_bird.tsv")
+
+## Define variables of interest
+bird_vars <- c(
+  "nc_y_bird__pre_001",
+  "nc_y_bird__pre_002",
+  "nc_y_bird__pre_003",
+  "nc_y_bird__pre_004",
+  "nc_y_bird__post_001",
+  "nc_y_bird__post_002",
+  "nc_y_bird__post_003",
+  "nc_y_bird__post_004",
+  "nc_y_bird__lvl1__crct_count",
+  "nc_y_bird__lvl2a__crct_count",
+  "nc_y_bird__lvl2b__crct_count",
+  "nc_y_bird__lvl3__crct_count",
+  "nc_y_bird__lvl3_dur",
+  "nc_y_bird_score"
+)
+
+## Extract data
+bird_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_bird.tsv",
+  vars = bird_vars
+)
+
+## Put into wide format
+bird_wide <- bird_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(bird_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+bird_wide  <- save_and_reload(bird_wide, "bird_wide")
+```
+
+## Cash Choice Task:
+```{r}
+## Read in table
+nc_y_cct <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_cct.tsv")
+
+## Define variables of interest
+cct_vars <- c(
+  "nc_y_cct_001"
+)
+
+## Extract data
+cct_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_cct.tsv",
+  vars = cct_vars
+)
+
+## Put into wide format
+cct_wide <- cct_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(cct_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+cct_wide  <- save_and_reload(cct_wide, "cct_wide")
+```
+
+## WISC-V Matrix Reasoning:
+```{r}
+## Read in table
+nc_y_wisc <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_wisc.tsv")
+
+## Define variables of interest
+wisc_vars <- c(
+  "nc_y_wisc__raw_score",
+  "nc_y_wisc__scaled_score"
+)
+
+## Extract data
+wisc_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_wisc.tsv",
+  vars = wisc_vars
+)
+
+## Put into wide format
+wisc_wide <- wisc_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(wisc_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+wisc_wide  <- save_and_reload(wisc_wide, "wisc_wide")
+```
+
+## Delay Discounting:
+```{r}
+## Read in table
+nc_y_ddis <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_ddis.tsv")
+
+## Define variables of interest
+ddis_vars <- c(
+  "nc_y_ddis__6hr__indifpt_prop",
+  "nc_y_ddis__1da__indifpt_prop",
+  "nc_y_ddis__1wk__indifpt_prop",
+  "nc_y_ddis__1mo__indifpt_prop",
+  "nc_y_ddis__3mo__indifpt_prop",
+  "nc_y_ddis__1yr__indifpt_prop",
+  "nc_y_ddis__5yr__indifpt_prop",
+  "nc_y_ddis__all_rt",
+  "nc_y_ddis__delay_rt",
+  "nc_y_ddis__immed_rt"
+)
+
+## Extract data
+ddis_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_ddis.tsv",
+  vars = ddis_vars
+)
+
+## Put into wide format
+ddis_wide <- ddis_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(ddis_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+ddis_wide  <- save_and_reload(ddis_wide, "ddis_wide")
+```
+## Emotional Stroop Task (EST):
+```{r}
+## Read in table
+nc_y_est <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_est.tsv")
+
+## Define variables of interest
+est_vars <- c(
+  "nc_y_est__50congr__congr__angf_acc",
+  "nc_y_est__50congr__congr__angf_rt",
+  "nc_y_est__50congr__congr__hapf_acc",
+  "nc_y_est__50congr__congr__hapf_rt",
+  "nc_y_est__50congr__congr_acc",
+  "nc_y_est__50congr__congr_rt",
+  "nc_y_est__50congr__incongr__angf_acc",
+  "nc_y_est__50congr__incongr__angf_rt",
+  "nc_y_est__50congr__incongr__hapf_acc",
+  "nc_y_est__50congr__incongr__hapf_rt",
+  "nc_y_est__50congr__incongr_acc",
+  "nc_y_est__50congr__incongr_rt",
+  
+  "nc_y_est__75congr__congr__angf_acc",
+  "nc_y_est__75congr__congr__angf_rt",
+  "nc_y_est__75congr__congr__hapf_acc",
+  "nc_y_est__75congr__congr__hapf_rt",
+  "nc_y_est__75congr__congr_acc",
+  "nc_y_est__75congr__congr_rt",
+  "nc_y_est__75congr__incongr__angf_acc",
+  "nc_y_est__75congr__incongr__angf_rt",
+  "nc_y_est__75congr__incongr__hapf_acc",
+  "nc_y_est__75congr__incongr__hapf_rt",
+  "nc_y_est__75congr__incongr_acc",
+  "nc_y_est__75congr__incongr_rt",
+  
+  "nc_y_est__50congr_acc",
+  "nc_y_est__50congr_rt",
+  "nc_y_est__75congr_acc",
+  "nc_y_est__75congr_rt",
+  "nc_y_est__congr_acc",
+  "nc_y_est__congr_rt",
+  "nc_y_est__incongr_acc",
+  "nc_y_est__incongr_rt"
+)
+
+## Extract data
+est_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_est.tsv",
+  vars = est_vars
+)
+
+## Put into wide format
+est_wide <- est_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(est_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+est_wide  <- save_and_reload(est_wide, "est_wide")
+```
+## Stanford Mental Arithmetic Response Time Evaluation (SMARTE):
+```{r}
+## Read in table
+nc_y_smarte <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_smarte.tsv")
+
+## Define variables of interest
+smarte_vars <- c(
+  "nc_y_smarte__corr_count",
+  "nc_y_smarte__enum__corr_count",
+  "nc_y_smarte__mdf__corr_count",
+  "nc_y_smarte__sdf__corr_count",
+  
+  "nc_y_smarte__enum__subit__corr_count",
+  "nc_y_smarte__enum__group__corr_count",
+  "nc_y_smarte__enum__nogroup__corr_count",
+  
+  "nc_y_smarte__mdf__challenge__corr_count",
+  "nc_y_smarte__mdf__noregroup__corr_count",
+  "nc_y_smarte__mdf__regroup__corr_count",
+  
+  "nc_y_smarte__sdf__norule__corr_count",
+  "nc_y_smarte__sdf__rule__corr_count"
+)
+
+## Extract data
+smarte_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_smarte.tsv",
+  vars = smarte_vars
+)
+
+## Put into wide format
+smarte_wide <- smarte_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(smarte_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+smarte_wide  <- save_and_reload(smarte_wide, "smarte_wide")
+```
+## NIH Toolbox:
+```{r}
+## Read in table
+nc_y_nihtb <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_nihtb.tsv")
+
+## Define variables of interest
+nihtb_vars <- c(
+  "nc_y_nihtb__comp__cryst__computed_score",
+  "nc_y_nihtb__comp__fluid__computed_score",
+  "nc_y_nihtb__comp__tot__computed_score",
+  "nc_y_nihtb__crdst__computed_score",
+  "nc_y_nihtb__flnkr__computed_score",
+  "nc_y_nihtb__lswmt__computed_score",
+  "nc_y_nihtb__picsq__computed_score",
+  "nc_y_nihtb__picvcb__computed_score",
+  "nc_y_nihtb__pttcp__computed_score",
+  "nc_y_nihtb__readr__computed_score"
+)
+
+## Extract data
+nihtb_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_nihtb.tsv",
+  vars = nihtb_vars
+)
+
+## Put into wide format
+nihtb_wide <- nihtb_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(nihtb_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+nihtb_wide  <- save_and_reload(nihtb_wide, "nihtb_wide")
+```
+
+## Game of Dice (GoD):
+```{r}
+## Read in table
+nc_y_gdt <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_gdt.tsv")
+
+## Define variables of interest
+gdt_vars <- c(
+  "nc_y_gdt__acct_balance",
+  "nc_y_gdt__wins_count",
+  "nc_y_gdt__losses_count",
+  "nc_y_gdt__safe_count",
+  "nc_y_gdt__risky_count"
+)
+
+## Extract data
+gdt_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_gdt.tsv",
+  vars = gdt_vars
+)
+
+## Put into wide format
+gdt_wide <- gdt_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(gdt_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+gdt_wide  <- save_and_reload(gdt_wide, "gdt_wide")
+```
+
+## Little Man Task (LMT):
+```{r}
+## Read in table
+nc_y_lmt <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_lmt.tsv")
+
+## Define variables of interest
+lmt_vars <- c(
+  "nc_y_lmt__crct_acc",
+  "nc_y_lmt__crct_count",
+  "nc_y_lmt__crct_rt",
+  "nc_y_lmt__wrong_count",
+  "nc_y_lmt__wrong_prcnt",
+  "nc_y_lmt__wrong_rt",
+  "nc_y_lmt_effncy",
+  "nc_y_lmt_rt"
+)
+
+## Extract data
+lmt_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_lmt.tsv",
+  vars = lmt_vars
+)
+
+## Put into wide format
+lmt_wide <- lmt_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(lmt_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+lmt_wide  <- save_and_reload(lmt_wide, "lmt_wide")
+```
+
+## Rey Auditory Verbal Learning Test (RAVLT):
+```{r}
+## Read in table
+nc_y_ravlt <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_ravlt.tsv")
+
+## Define variables of interest
+ravlt_vars <- c(
+  "nc_y_ravlt__trial1__crct_count",
+  "nc_y_ravlt__trial2__crct_count",
+  "nc_y_ravlt__trial3__crct_count",
+  "nc_y_ravlt__trial4__crct_count",
+  "nc_y_ravlt__trial5__crct_count",
+  "nc_y_ravlt__lstb__crct_count",
+  "nc_y_ravlt__trial6__sd__crct_count",
+  "nc_y_ravlt__trial7__ld__crct_count"
+)
+
+## Extract data
+ravlt_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_ravlt.tsv",
+  vars = ravlt_vars
+)
+
+## Put into wide format
+ravlt_wide <- ravlt_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(ravlt_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+ravlt_wide  <- save_and_reload(ravlt_wide, "ravlt_wide")
+```
+
+## Social Influence Task (SIT):
+```{r}
+## Read in table
+nc_y_sit <- readr::read_tsv("Z:/external/abcd/6.1/core/neurocognition/nc_y_sit.tsv")
+
+## Define variables of interest
+sit_vars <- c(
+  "nc_y_sit__final_mean",
+  "nc_y_sit__final_rt",
+  "nc_y_sit__initial_mean",
+  "nc_y_sit__initial_rt",
+  "nc_y_sit__final__nr_count",
+  "nc_y_sit__initial__nr_count"
+)
+
+## Extract data
+sit_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/neurocognition/nc_y_sit.tsv",
+  vars = sit_vars
+)
+
+## Put into wide format
+sit_wide <- sit_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(sit_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+sit_wide  <- save_and_reload(sit_wide, "sit_wide")
+```
+
+## DSM-5 + Syndrome Scale:
+```{r}
+## Read in table
+mh_p_cbcl <- readr::read_tsv("Z:/external/abcd/6.1/core/mental-health/mh_p_cbcl.tsv")
+
+## Define variables of interest
+cbcl_vars <- c(
+  "mh_p_cbcl__dsm__adhd_tscore",
+  "mh_p_cbcl__dsm__anx_tscore",
+  "mh_p_cbcl__dsm__cond_tscore",
+  "mh_p_cbcl__dsm__dep_tscore",
+  "mh_p_cbcl__dsm__opp_tscore",
+  "mh_p_cbcl__dsm__somat_tscore",
+  "mh_p_cbcl__ocd_tscore",
+  "mh_p_cbcl__sct_tscore",
+  "mh_p_cbcl__strs_tscore",
+  
+  "mh_p_cbcl_tscore",
+  "mh_p_cbcl__synd__aggr_tscore",
+  "mh_p_cbcl__synd__anxdep_tscore",
+  "mh_p_cbcl__synd__attn_tscore",
+  "mh_p_cbcl__synd__ext_tscore",
+  "mh_p_cbcl__synd__int_tscore",
+  "mh_p_cbcl__synd__rule_tscore",
+  "mh_p_cbcl__synd__soc_tscore",
+  "mh_p_cbcl__synd__som_tscore",
+  "mh_p_cbcl__synd__tho_tscore",
+  "mh_p_cbcl__synd__wthdep_tscore"
+)
+
+## Extract data
+cbcl_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/mental-health/mh_p_cbcl.tsv",
+  vars = cbcl_vars
+)
+
+## Put into wide format
+cbcl_wide <- cbcl_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(cbcl_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+cbcl_wide  <- save_and_reload(cbcl_wide, "cbcl_wide")
+```
+
+## Psychotic Symptoms:
+```{r}
+## Read in table
+mh_y_pps <- readr::read_tsv("Z:/external/abcd/6.1/core/mental-health/mh_y_pps.tsv")
+
+## Define variables of interest
+pps_vars <- c(
+  "mh_y_pps__severity_score"
+)
+
+## Extract data
+pps_long <- extract_abcd(
+  path = "Z:/external/abcd/6.1/core/mental-health/mh_y_pps.tsv",
+  vars = pps_vars
+)
+
+## Put into wide format
+pps_wide <- pps_long |>
+  tidyr::pivot_wider(
+    id_cols = participant_id,
+    names_from = session_id,
+    values_from = dplyr::all_of(pps_vars),
+    names_sep = "_"
+  )
+
+## Save to HPC
+pps_wide  <- save_and_reload(pps_wide, "pps_wide")
+```
+
+## Merge ELA together
+```{r}
+ela_dataset <- demo_wide |>
+  left_join(pm_wide, by = "participant_id") |>
+  left_join(fes_wide, by = "participant_id") |>
+  left_join(nsc_wide, by = "participant_id")
+
+## Save to HPC
+ela_dataset  <- save_and_reload(ela_dataset, "ela_dataset")
+```
+
+## Merge COGNITIVE together
+```{r}
+cog_dataset <- bird_wide |>
+  left_join(cct_wide, by = "participant_id") |>
+  left_join(wisc_wide, by = "participant_id") |>
+  left_join(ddis_wide, by = "participant_id") |>
+  left_join(est_wide, by = "participant_id") |>
+  left_join(smarte_wide, by = "participant_id") |>
+  left_join(nihtb_wide, by = "participant_id") |>
+  left_join(gdt_wide, by = "participant_id") |>
+  left_join(lmt_wide, by = "participant_id") |>
+  left_join(ravlt_wide, by = "participant_id") |>
+  left_join(sit_wide, by = "participant_id")
+
+## Save to HPC
+cog_dataset  <- save_and_reload(cog_dataset, "cog_dataset")
+```
+## Merge MENTAL HEALTH together
+```{r}
+mh_dataset <- cbcl_wide |>
+  left_join(pps_wide, by = "participant_id")
+
+## Save to HPC
+mh_dataset  <- save_and_reload(mh_dataset, "mh_dataset")
+```
+
+
+
